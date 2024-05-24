@@ -13,5 +13,7 @@ public interface ProductColorService {
 
     ProductColor createAndUpdate(ProductColor productColor);
 
+    List<ProductColor> findAllById_ProductId(Integer productId);
+
     List<ColorThumbnailDTO> getColorByProductId(Integer productId);
 }

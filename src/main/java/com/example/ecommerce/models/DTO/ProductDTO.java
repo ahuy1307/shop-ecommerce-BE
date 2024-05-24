@@ -15,11 +15,11 @@ public class ProductDTO {
     private Integer id;
     private String name;
     private float price;
-    private List<ColorThumbnailDTO> colors;
-    private List<SizeQuantityDTO> sizes;
     private String composition;
     private String neckline;
     private String sleeveLength;
     private String careInstruction;
     private Integer categoryId;
+    private List<ColorThumbnailDTO> colors;
+    private List<SizeQuantityDTO> sizes;
 }

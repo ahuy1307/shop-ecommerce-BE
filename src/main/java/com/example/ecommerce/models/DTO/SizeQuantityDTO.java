@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SizeQuantityDTO {
     private SizeDTO size;
-    private String quantityStock;
+    private Integer quantityStock;
 }
