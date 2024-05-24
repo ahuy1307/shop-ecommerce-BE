@@ -2,8 +2,10 @@ package com.example.ecommerce.controllers;
 
 import com.example.ecommerce.mappers.Mapper;
 import com.example.ecommerce.models.DTO.CategoryDTO;
+import com.example.ecommerce.models.DTO.ResponseMessage;
 import com.example.ecommerce.models.entities.Category;
 import com.example.ecommerce.services.impl.CategoryServiceImpl;
+import com.example.ecommerce.services.impl.TypePersonServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class CategoryController {
     private final CategoryServiceImpl categoryService;
     private final Mapper<Category, CategoryDTO> categoryMapper;
+    private final TypePersonServiceImpl typePersonService;
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> getOneCategory(@PathVariable Integer id) {
@@ -43,11 +46,14 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<ResponseMessage> createCategory(@RequestBody CategoryDTO categoryDTO) {
+        if (!typePersonService.isExist(categoryDTO.getTypePersonId()))
+            return new ResponseEntity<>(new ResponseMessage(false, "Type Person not found!"), HttpStatus.NOT_FOUND);
+
         Category category = categoryMapper.mapFrom(categoryDTO);
         Category createdCategory = categoryService.createAndUpdate(category);
 
-        return new ResponseEntity<>(categoryMapper.mapTo(createdCategory), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponseMessage(true, "Category created successfully!"), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
