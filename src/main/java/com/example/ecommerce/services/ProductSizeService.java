@@ -16,4 +16,8 @@ public interface ProductSizeService {
     List<ProductSize> findAllById_ProductId(Integer productId);
 
     List<SizeQuantityDTO> getSizeByProductId(Integer productId);
+
+    List<Integer> findAllByTypePersonId(Integer typePersonId);
+
+    List<Integer> findAllByListSizeId(List<Integer> listSizeId);
 }

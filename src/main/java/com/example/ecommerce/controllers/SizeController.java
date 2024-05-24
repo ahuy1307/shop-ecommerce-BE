@@ -3,11 +3,13 @@ package com.example.ecommerce.controllers;
 import com.example.ecommerce.mappers.Mapper;
 import com.example.ecommerce.models.DTO.SizeDTO;
 import com.example.ecommerce.models.entities.Size;
+import com.example.ecommerce.services.impl.ProductSizeServiceImpl;
 import com.example.ecommerce.services.impl.SizeServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class SizeController {
     private final SizeServiceImpl sizeService;
     private final Mapper<Size, SizeDTO> sizeMapper;
+    private final ProductSizeServiceImpl productSizeService;
 
     @GetMapping
     public List<SizeDTO> getAllSize() {
@@ -32,6 +35,21 @@ public class SizeController {
         if (size == null)
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(sizeMapper.mapTo(size));
+    }
+
+    @GetMapping("/person/{typePersonId}")
+    public List<SizeDTO> getSizeByTypePersonId(@PathVariable Integer typePersonId) {
+        List<Integer> sizes = productSizeService.findAllByTypePersonId(typePersonId);
+        List<SizeDTO> list = new ArrayList<>();
+
+        for (Integer sizeId : sizes) {
+            Size size = sizeService.findOne(sizeId).orElse(null);
+            if (size != null) {
+                list.add(sizeMapper.mapTo(size));
+            }
+        }
+
+        return list;
     }
 
     @PostMapping

@@ -78,6 +78,32 @@ public class ProductController {
         return getListProductDTO(products);
     }
 
+    @GetMapping("/color")
+    public List<ProductDTO> getAllProductByListColorId(@RequestParam(name = "color") List<Integer> listColorId) {
+        List<Integer> productIds = productColorService.findAllByListColorId(listColorId);
+
+        return getProductDTOS(productIds);
+    }
+
+    private List<ProductDTO> getProductDTOS(List<Integer> productIds) {
+        return productIds.stream().map(item -> {
+            Product product = productService.findOne(item).orElse(null);
+            if (product == null)
+                return null;
+            ProductDTO productDTO = productMapper.mapTo(product);
+            productDTO.setColors(productColorService.getColorByProductId(item));
+            productDTO.setSizes(productSizeService.getSizeByProductId(item));
+            return productDTO;
+        }).toList();
+    }
+
+    @GetMapping("/size")
+    public List<ProductDTO> getAllProductByListSizeId(@RequestParam(name = "size") List<Integer> listSizeId) {
+        List<Integer> productIds = productSizeService.findAllByListSizeId(listSizeId);
+
+        return getProductDTOS(productIds);
+    }
+
     private void createAndUpdateColorAndSize(ProductDTO productDTO, Product createdProduct) {
         productDTO.getColors().stream().map(item -> {
             ProductColor productColor = ProductColor.builder()
@@ -147,8 +173,13 @@ public class ProductController {
     public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
         if (!productService.isExist(id))
             return ResponseEntity.notFound().build();
-        
+
         productService.delete(id);
+        List<ProductColor> productColors = productColorService.findAllById_ProductId(id);
+        List<ProductSize> productSizes = productSizeService.findAllById_ProductId(id);
+
+        productColors.stream().forEach(item -> productColorService.delete(item.getId()));
+        productSizes.stream().forEach(item -> productSizeService.delete(item.getId()));
         return ResponseEntity.noContent().build();
     }
 }

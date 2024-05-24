@@ -61,4 +61,14 @@ public class ProductSizeServiceImpl implements ProductSizeService {
             return sizeQuantityDTO;
         }).toList();
     }
+
+    @Override
+    public List<Integer> findAllByTypePersonId(Integer typePersonId) {
+        return productSizeRepository.findAllByTypePersonId(typePersonId);
+    }
+
+    @Override
+    public List<Integer> findAllByListSizeId(List<Integer> listSizeId) {
+        return productSizeRepository.findAllByListSizeId(listSizeId);
+    }
 }

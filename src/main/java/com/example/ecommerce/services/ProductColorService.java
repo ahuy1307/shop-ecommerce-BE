@@ -16,4 +16,8 @@ public interface ProductColorService {
     List<ProductColor> findAllById_ProductId(Integer productId);
 
     List<ColorThumbnailDTO> getColorByProductId(Integer productId);
+
+    List<Integer> findAllByTypePersonId(Integer typePersonId);
+
+    List<Integer> findAllByListColorId(List<Integer> listColorId);
 }

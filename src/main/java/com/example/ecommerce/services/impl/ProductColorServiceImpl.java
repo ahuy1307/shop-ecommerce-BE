@@ -60,4 +60,14 @@ public class ProductColorServiceImpl implements ProductColorService {
             return colorThumbnailDTO;
         }).toList();
     }
+
+    @Override
+    public List<Integer> findAllByTypePersonId(Integer typePersonId) {
+        return productColorRepository.findAllByTypePersonId(typePersonId);
+    }
+
+    @Override
+    public List<Integer> findAllByListColorId(List<Integer> listColorId) {
+        return productColorRepository.findAllByListColorId(listColorId);
+    }
 }

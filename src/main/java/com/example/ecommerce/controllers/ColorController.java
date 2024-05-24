@@ -4,11 +4,13 @@ import com.example.ecommerce.mappers.Mapper;
 import com.example.ecommerce.models.DTO.ColorDTO;
 import com.example.ecommerce.models.entities.Color;
 import com.example.ecommerce.services.impl.ColorServiceImpl;
+import com.example.ecommerce.services.impl.ProductColorServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class ColorController {
     private final ColorServiceImpl colorService;
     private final Mapper<Color, ColorDTO> colorMapper;
+    private final ProductColorServiceImpl productColorService;
 
     @GetMapping("/{id}")
     public ResponseEntity<ColorDTO> getOneColor(@PathVariable Integer id) {
@@ -40,6 +43,21 @@ public class ColorController {
         List<Color> colors = colorService.getColorByName(name);
 
         return colors.stream().map(colorMapper::mapTo).collect(Collectors.toList());
+    }
+
+    @GetMapping("/person/{typePersonId}")
+    public List<ColorDTO> getColorByTypePersonId(@PathVariable Integer typePersonId) {
+        List<Integer> colors = productColorService.findAllByTypePersonId(typePersonId);
+        List<ColorDTO> list = new ArrayList<>();
+        
+        for (Integer colorId : colors) {
+            Color color = colorService.findOne(colorId).orElse(null);
+            if (color != null) {
+                list.add(colorMapper.mapTo(color));
+            }
+        }
+
+        return list;
     }
 
     @PostMapping
