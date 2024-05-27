@@ -1,6 +1,7 @@
 package com.example.ecommerce.controllers;
 
 import com.example.ecommerce.mappers.Mapper;
+import com.example.ecommerce.models.DTO.ColorAndQuantityDTO;
 import com.example.ecommerce.models.DTO.ColorDTO;
 import com.example.ecommerce.models.entities.Color;
 import com.example.ecommerce.services.impl.ColorServiceImpl;
@@ -40,24 +41,33 @@ public class ColorController {
 
     @GetMapping("/search")
     public List<ColorDTO> getColorByName(@RequestParam String name) {
-        List<Color> colors = colorService.getColorByName(name);
+        List<Color> colors = colorService.searchColorByName(name);
 
         return colors.stream().map(colorMapper::mapTo).collect(Collectors.toList());
     }
 
     @GetMapping("/person/{typePersonId}")
-    public List<ColorDTO> getColorByTypePersonId(@PathVariable Integer typePersonId) {
-        List<Integer> colors = productColorService.findAllByTypePersonId(typePersonId);
-        List<ColorDTO> list = new ArrayList<>();
-        
-        for (Integer colorId : colors) {
-            Color color = colorService.findOne(colorId).orElse(null);
-            if (color != null) {
-                list.add(colorMapper.mapTo(color));
-            }
-        }
+    public List<ColorAndQuantityDTO> yourControllerMethod(@PathVariable Integer typePersonId,
+                                                          @RequestParam(name = "size", required = false) List<Integer> listSizeId,
+                                                          @RequestParam(name = "category", required = false) Integer categoryId) {
+        // Gọi phương thức từ repository để lấy dữ liệu từ cơ sở dữ liệu
+        List<Object[]> colorIdAndQuantity = productColorService.findColorCountsByCriteria(typePersonId, listSizeId, categoryId);
+        List<Integer> colorIds = productColorService.findAllColorByTypePersonId(typePersonId);
 
-        return list;
+        List<ColorAndQuantityDTO> results = new ArrayList<>();
+        for (Integer colorId : colorIds) {
+            ColorAndQuantityDTO colorAndQuantityDTO = new ColorAndQuantityDTO();
+            colorAndQuantityDTO.setColor(colorMapper.mapTo(colorService.findOne(colorId).orElse(null)));
+            colorAndQuantityDTO.setQuantity(0);
+            for (Object[] item : colorIdAndQuantity) {
+                if (colorId.equals(item[0])) {
+                    colorAndQuantityDTO.setQuantity(Integer.parseInt(item[1].toString()));
+                    break;
+                }
+            }
+            results.add(colorAndQuantityDTO);
+        }
+        return results;
     }
 
     @PostMapping

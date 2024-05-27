@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.Normalizer;
 import java.util.List;
 
 @RestController
@@ -29,16 +30,16 @@ public class ProductController {
     private final ProductSizeServiceImpl productSizeService;
     private final ProductColorServiceImpl productColorService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getOneProduct(@PathVariable Integer id) {
-        Product product = productService.findOne(id).orElse(null);
+    @GetMapping("/{slug}")
+    public ResponseEntity<ProductDTO> getOneProduct(@PathVariable String slug) {
+        Product product = productService.findBySlug(slug).orElse(null);
 
         if (product == null)
             return ResponseEntity.notFound().build();
 
         ProductDTO productDTO = productMapper.mapTo(product);
-        productDTO.setColors(productColorService.getColorByProductId(id));
-        productDTO.setSizes(productSizeService.getSizeByProductId(id));
+        productDTO.setColors(productColorService.getColorByProductId(product.getId()));
+        productDTO.setSizes(productSizeService.getSizeByProductId(product.getId()));
 
         return new ResponseEntity<>(productDTO, HttpStatus.OK);
     }
@@ -63,24 +64,12 @@ public class ProductController {
         return getListProductDTO(products);
     }
 
-
-    @GetMapping("/category/{categoryId}")
-    public List<ProductDTO> getAllProductByCategoryId(@PathVariable Integer categoryId) {
-        List<Product> products = productService.findAllByCategoryId(categoryId);
-
-        return getListProductDTO(products);
-    }
-
     @GetMapping("/person/{typePersonId}")
-    public List<ProductDTO> getAllProductByTypePersonId(@PathVariable Integer typePersonId) {
-        List<Product> products = productService.findAllByTypePersonId(typePersonId);
-
-        return getListProductDTO(products);
-    }
-
-    @GetMapping("/color")
-    public List<ProductDTO> getAllProductByListColorId(@RequestParam(name = "color") List<Integer> listColorId) {
-        List<Integer> productIds = productColorService.findAllByListColorId(listColorId);
+    public List<ProductDTO> getAllProductByTypePersonId(@PathVariable Integer typePersonId,
+                                                        @RequestParam(name = "category", required = false) Integer categoryId,
+                                                        @RequestParam(name = "color", required = false) List<Integer> listColorId,
+                                                        @RequestParam(name = "size", required = false) List<Integer> listSizeId) {
+        List<Integer> productIds = productService.findProductByCriteria(typePersonId, categoryId, listColorId, listSizeId);
 
         return getProductDTOS(productIds);
     }
@@ -95,13 +84,6 @@ public class ProductController {
             productDTO.setSizes(productSizeService.getSizeByProductId(item));
             return productDTO;
         }).toList();
-    }
-
-    @GetMapping("/size")
-    public List<ProductDTO> getAllProductByListSizeId(@RequestParam(name = "size") List<Integer> listSizeId) {
-        List<Integer> productIds = productSizeService.findAllByListSizeId(listSizeId);
-
-        return getProductDTOS(productIds);
     }
 
     private void createAndUpdateColorAndSize(ProductDTO productDTO, Product createdProduct) {
@@ -134,6 +116,7 @@ public class ProductController {
             return new ResponseEntity<>(new ResponseMessage(false, "Category not found!"), HttpStatus.NOT_FOUND);
 
         Product product = productMapper.mapFrom(productDTO);
+        product.setSlug(toSlug(product.getName()));
         Product createdProduct = productService.createAndUpdate(product);
 
         createAndUpdateColorAndSize(productDTO, createdProduct);
@@ -181,5 +164,29 @@ public class ProductController {
         productColors.stream().forEach(item -> productColorService.delete(item.getId()));
         productSizes.stream().forEach(item -> productSizeService.delete(item.getId()));
         return ResponseEntity.noContent().build();
+    }
+
+    public String toSlug(String input) {
+        if (input == null || input.isEmpty()) {
+            return "";
+        }
+
+        // Convert to lowercase
+        String slug = input.toLowerCase();
+
+        // Remove accents and diacritics
+        slug = Normalizer.normalize(slug, Normalizer.Form.NFD);
+        slug = slug.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
+        // Replace apostrophes with nothing (remove them)
+        slug = slug.replaceAll("'", "");
+
+        // Replace all non-alphanumeric characters with hyphens
+        slug = slug.replaceAll("[^a-z0-9]+", "-");
+
+        // Remove leading and trailing hyphens
+        slug = slug.replaceAll("(^-+|-+$)", "");
+
+        return slug;
     }
 }

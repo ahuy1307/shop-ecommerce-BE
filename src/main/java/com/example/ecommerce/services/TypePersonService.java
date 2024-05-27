@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TypePersonService {
-    Optional<TypePerson> findOne(Integer id);
+    Optional<TypePerson> findBySlug(String slug);
 
     List<TypePerson> findAll();
-    
+
     TypePerson createAndUpdate(TypePerson typePerson);
 
     void delete(Integer id);

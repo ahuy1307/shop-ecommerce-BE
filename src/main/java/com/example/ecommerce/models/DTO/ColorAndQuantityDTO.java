@@ -6,12 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class TypePersonDTO {
-    private Integer id;
-    private String name;
-    private String description;
-    private String slug;
+public class ColorAndQuantityDTO {
+    private ColorDTO color;
+    private Integer quantity;
 }

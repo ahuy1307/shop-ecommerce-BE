@@ -62,12 +62,12 @@ public class ProductColorServiceImpl implements ProductColorService {
     }
 
     @Override
-    public List<Integer> findAllByTypePersonId(Integer typePersonId) {
-        return productColorRepository.findAllByTypePersonId(typePersonId);
+    public List<Object[]> findColorCountsByCriteria(Integer typePersonId, List<Integer> listSizeId, Integer categoryId) {
+        return productColorRepository.findColorCountsByCriteria(typePersonId, listSizeId, categoryId);
     }
 
     @Override
-    public List<Integer> findAllByListColorId(List<Integer> listColorId) {
-        return productColorRepository.findAllByListColorId(listColorId);
+    public List<Integer> findAllColorByTypePersonId(Integer typePersonId) {
+        return productColorRepository.findAllColorIdByTypePersonId(typePersonId);
     }
 }

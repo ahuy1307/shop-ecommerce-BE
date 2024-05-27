@@ -43,4 +43,14 @@ public class CategoryServiceImpl implements CategoryService {
     public List<Category> findAllByTypePersonId(Integer typePersonId) {
         return categoryRepository.findCategoryByTypePersonId(typePersonId);
     }
+
+    @Override
+    public List<Object[]> findCategoryCountByCriteria(Integer typePersonId, List<Integer> listColorId, List<Integer> listSizeId) {
+        return categoryRepository.findCategoryCountByCriteria(typePersonId, listColorId, listSizeId);
+    }
+
+    @Override
+    public List<Integer> findAllCategoryIdByTypePersonId(Integer typePersonId) {
+        return categoryRepository.findAllCategoryIdByTypePersonId(typePersonId);
+    }
 }

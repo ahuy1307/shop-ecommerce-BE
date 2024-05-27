@@ -19,5 +19,8 @@ public interface ProductSizeService {
 
     List<Integer> findAllByTypePersonId(Integer typePersonId);
 
-    List<Integer> findAllByListSizeId(List<Integer> listSizeId);
+    List<Object[]> findSizeCountsByCriteria(Integer typePersonId,
+                                            List<Integer> listColorId, Integer categoryId);
+
+    List<Integer> findAllSizeIdByTypePersonId(Integer typePersonId);
 }

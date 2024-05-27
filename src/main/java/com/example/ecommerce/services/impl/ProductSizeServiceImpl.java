@@ -68,7 +68,12 @@ public class ProductSizeServiceImpl implements ProductSizeService {
     }
 
     @Override
-    public List<Integer> findAllByListSizeId(List<Integer> listSizeId) {
-        return productSizeRepository.findAllByListSizeId(listSizeId);
+    public List<Object[]> findSizeCountsByCriteria(Integer typePersonId, List<Integer> listColorId, Integer categoryId) {
+        return productSizeRepository.findSizeCountsByCriteria(typePersonId, listColorId, categoryId);
+    }
+
+    @Override
+    public List<Integer> findAllSizeIdByTypePersonId(Integer typePersonId) {
+        return productSizeRepository.findAllSizeIdByTypePersonId(typePersonId);
     }
 }

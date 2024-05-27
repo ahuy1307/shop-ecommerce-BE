@@ -13,13 +13,25 @@ public interface ProductColorRepository extends JpaRepository<ProductColor, Prod
 
     List<ProductColor> findAllById_ProductId(Integer productId);
 
-    @Query("SELECT distinct p.id.colorId FROM ProductColor p " +
+    @Query("SELECT p.id.colorId, COUNT(DISTINCT pr.id) AS productCount " +
+            "FROM ProductColor p " +
+            "JOIN Product pr ON p.id.productId = pr.id " +
+            "JOIN ProductSize ps ON pr.id = ps.id.productId " +
+            "JOIN Category c ON pr.categoryId = c.id " +
+            "JOIN TypePerson t ON c.typePersonId = t.id " +
+            "WHERE t.id = :typePersonId " +
+            "AND (ps.id.sizeId IN :listSizeId OR :listSizeId IS NULL) " +
+            "AND (c.id = :categoryId OR :categoryId IS NULL) " +
+            "GROUP BY p.id.colorId " +
+            "ORDER BY p.id.colorId ASC")
+    List<Object[]> findColorCountsByCriteria(Integer typePersonId,
+                                             List<Integer> listSizeId,
+                                             Integer categoryId);
+
+    @Query("SELECT distinct p.id.colorId from ProductColor p " +
             "JOIN Product pr on p.id.productId = pr.id " +
             "JOIN Category c on pr.categoryId = c.id " +
-            "join TypePerson t on c.typePersonId = t.id " +
+            "JOIN TypePerson t on c.typePersonId = t.id " +
             "where t.id = :typePersonId order by p.id.colorId asc")
-    List<Integer> findAllByTypePersonId(Integer typePersonId);
-
-    @Query("SELECT distinct p.id.productId from ProductColor p where p.id.colorId in :listColorId")
-    List<Integer> findAllByListColorId(List<Integer> listColorId);
+    List<Integer> findAllColorIdByTypePersonId(Integer typePersonId);
 }

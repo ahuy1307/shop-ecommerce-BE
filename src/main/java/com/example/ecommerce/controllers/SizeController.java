@@ -1,6 +1,7 @@
 package com.example.ecommerce.controllers;
 
 import com.example.ecommerce.mappers.Mapper;
+import com.example.ecommerce.models.DTO.SizeAndQuantityDTO;
 import com.example.ecommerce.models.DTO.SizeDTO;
 import com.example.ecommerce.models.entities.Size;
 import com.example.ecommerce.services.impl.ProductSizeServiceImpl;
@@ -38,18 +39,26 @@ public class SizeController {
     }
 
     @GetMapping("/person/{typePersonId}")
-    public List<SizeDTO> getSizeByTypePersonId(@PathVariable Integer typePersonId) {
-        List<Integer> sizes = productSizeService.findAllByTypePersonId(typePersonId);
-        List<SizeDTO> list = new ArrayList<>();
+    public List<SizeAndQuantityDTO> yourControllerMethod(@PathVariable Integer typePersonId,
+                                                         @RequestParam(name = "color", required = false) List<Integer> listColorId,
+                                                         @RequestParam(name = "category", required = false) Integer categoryId) {
+        List<Object[]> sizeAndQuantity = productSizeService.findSizeCountsByCriteria(typePersonId, listColorId, categoryId);
+        List<Integer> sizeIds = productSizeService.findAllSizeIdByTypePersonId(typePersonId);
 
-        for (Integer sizeId : sizes) {
-            Size size = sizeService.findOne(sizeId).orElse(null);
-            if (size != null) {
-                list.add(sizeMapper.mapTo(size));
+        List<SizeAndQuantityDTO> results = new ArrayList<>();
+        for (Integer sizeId : sizeIds) {
+            SizeAndQuantityDTO sizeIdAndQuantityDTO = new SizeAndQuantityDTO();
+            sizeIdAndQuantityDTO.setSize(sizeMapper.mapTo(sizeService.findOne(sizeId).orElse(null)));
+            sizeIdAndQuantityDTO.setQuantity(0);
+            for (Object[] item : sizeAndQuantity) {
+                if (sizeId.equals(item[0])) {
+                    sizeIdAndQuantityDTO.setQuantity(Integer.parseInt(item[1].toString()));
+                    break;
+                }
             }
+            results.add(sizeIdAndQuantityDTO);
         }
-
-        return list;
+        return results;
     }
 
     @PostMapping

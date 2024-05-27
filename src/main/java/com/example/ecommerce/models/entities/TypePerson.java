@@ -19,4 +19,5 @@ public class TypePerson {
 
     private String name;
     private String description;
+    private String slug;
 }

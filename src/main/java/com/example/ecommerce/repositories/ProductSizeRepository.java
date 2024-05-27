@@ -20,6 +20,25 @@ public interface ProductSizeRepository extends JpaRepository<ProductSize, Produc
             "where t.id = :typePersonId order by p.id.sizeId asc")
     List<Integer> findAllByTypePersonId(Integer typePersonId);
 
-    @Query("SELECT distinct p.id.productId from ProductSize p where p.id.sizeId in :listSizeId")
-    List<Integer> findAllByListSizeId(List<Integer> listSizeId);
+    @Query("SELECT p.id.sizeId, COUNT(DISTINCT pr.id) AS productCount " +
+            "FROM ProductSize p " +
+            "JOIN Product pr ON p.id.productId = pr.id " +
+            "JOIN ProductColor pc ON pr.id = pc.id.productId " +
+            "JOIN Category c ON pr.categoryId = c.id " +
+            "JOIN TypePerson t ON c.typePersonId = t.id " +
+            "WHERE t.id = :typePersonId " +
+            "AND (pc.id.colorId IN :listColorId OR :listColorId IS NULL) " +
+            "AND (c.id = :categoryId OR :categoryId IS NULL) " +
+            "GROUP BY p.id.sizeId " +
+            "ORDER BY p.id.sizeId ASC")
+    List<Object[]> findSizeCountsByCriteria(Integer typePersonId,
+                                            List<Integer> listColorId,
+                                            Integer categoryId);
+
+    @Query("SELECT distinct p.id.sizeId from ProductSize p " +
+            "JOIN Product pr on p.id.productId = pr.id " +
+            "JOIN Category c on pr.categoryId = c.id " +
+            "JOIN TypePerson t on c.typePersonId = t.id " +
+            "where t.id = :typePersonId order by p.id.sizeId asc")
+    List<Integer> findAllSizeIdByTypePersonId(Integer typePersonId);
 }

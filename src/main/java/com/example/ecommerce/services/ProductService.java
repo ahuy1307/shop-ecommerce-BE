@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
+    Optional<Product> findBySlug(String slug);
+
     Optional<Product> findOne(Integer id);
 
     List<Product> findAll();
@@ -17,7 +19,8 @@ public interface ProductService {
 
     boolean isExist(Integer id);
 
-    List<Product> findAllByCategoryId(Integer categoryId);
-
-    List<Product> findAllByTypePersonId(Integer typePersonId);
+    List<Integer> findProductByCriteria(Integer typePersonId,
+                                        Integer categoryId,
+                                        List<Integer> listColorId,
+                                        List<Integer> listSizeId);
 }

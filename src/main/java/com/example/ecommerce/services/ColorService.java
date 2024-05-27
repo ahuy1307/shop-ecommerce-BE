@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface ColorService {
     List<Color> findAll();
 
-    List<Color> getColorByName(String name);
+    List<Color> searchColorByName(String name);
 
     Optional<Color> findOne(Integer id);
 
@@ -17,4 +17,5 @@ public interface ColorService {
     void delete(Integer id);
 
     boolean isExist(Integer id);
+
 }

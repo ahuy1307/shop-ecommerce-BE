@@ -1,6 +1,7 @@
 package com.example.ecommerce.controllers;
 
 import com.example.ecommerce.mappers.Mapper;
+import com.example.ecommerce.models.DTO.CategoryAndQuantityDTO;
 import com.example.ecommerce.models.DTO.CategoryDTO;
 import com.example.ecommerce.models.DTO.ResponseMessage;
 import com.example.ecommerce.models.entities.Category;
@@ -39,10 +40,28 @@ public class CategoryController {
     }
 
     @GetMapping("/person/{typePersonId}")
-    public List<CategoryDTO> getAllCategoryByTypePersonId(@PathVariable Integer typePersonId) {
-        List<Category> categories = categoryService.findAllByTypePersonId(typePersonId);
+    public List<CategoryAndQuantityDTO> getAllCategoryByTypePersonId(@PathVariable Integer typePersonId,
+                                                                     @RequestParam(name = "color", required = false) List<Integer> listColorId,
+                                                                     @RequestParam(name = "size", required = false) List<Integer> listSizeId) {
+        List<Object[]> categoryAndQuantity = categoryService.findCategoryCountByCriteria(typePersonId, listColorId, listSizeId);
+        List<Integer> categoryIds = categoryService.findAllCategoryIdByTypePersonId(typePersonId);
 
-        return categories.stream().map(categoryMapper::mapTo).collect(Collectors.toList());
+        List<CategoryAndQuantityDTO> results = categoryIds.stream().map(
+                categoryId -> {
+                    CategoryAndQuantityDTO categoryAndQuantityDTO = new CategoryAndQuantityDTO();
+                    categoryAndQuantityDTO.setCategory(categoryMapper.mapTo(categoryService.findOne(categoryId).orElse(null)));
+                    categoryAndQuantityDTO.setQuantity(0);
+                    for (Object[] item : categoryAndQuantity) {
+                        if (categoryId.equals(item[0])) {
+                            categoryAndQuantityDTO.setQuantity(Integer.parseInt(item[1].toString()));
+                            break;
+                        }
+                    }
+                    return categoryAndQuantityDTO;
+                }
+        ).toList();
+
+        return results;
     }
 
     @PostMapping

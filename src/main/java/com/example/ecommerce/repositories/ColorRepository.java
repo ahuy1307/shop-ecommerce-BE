@@ -11,5 +11,6 @@ import java.util.List;
 public interface ColorRepository extends JpaRepository<Color, Integer> {
 
     @Query("SELECT c FROM Color c WHERE c.name like :name%")
-    List<Color> getColorByName(String name);
+    List<Color> searchColorByName(String name);
+
 }

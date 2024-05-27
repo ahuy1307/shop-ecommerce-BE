@@ -17,4 +17,10 @@ public interface CategoryService {
     boolean isExist(Integer id);
 
     List<Category> findAllByTypePersonId(Integer typePersonId);
+
+    List<Object[]> findCategoryCountByCriteria(Integer typePersonId,
+                                               List<Integer> listColorId,
+                                               List<Integer> listSizeId);
+
+    List<Integer> findAllCategoryIdByTypePersonId(Integer typePersonId);
 }

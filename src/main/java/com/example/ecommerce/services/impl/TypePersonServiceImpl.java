@@ -15,8 +15,8 @@ public class TypePersonServiceImpl implements TypePersonService {
     private final TypePersonRepository typePersonRepository;
 
     @Override
-    public Optional<TypePerson> findOne(Integer id) {
-        return typePersonRepository.findById(id);
+    public Optional<TypePerson> findBySlug(String slug) {
+        return typePersonRepository.findBySlug(slug);
     }
 
     @Override

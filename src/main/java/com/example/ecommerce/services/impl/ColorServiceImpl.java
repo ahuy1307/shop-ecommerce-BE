@@ -35,8 +35,8 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
-    public List<Color> getColorByName(String name) {
-        return colorRepository.getColorByName(name);
+    public List<Color> searchColorByName(String name) {
+        return colorRepository.searchColorByName(name);
     }
 
     @Override

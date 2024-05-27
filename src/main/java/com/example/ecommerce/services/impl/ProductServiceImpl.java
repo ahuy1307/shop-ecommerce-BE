@@ -15,8 +15,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public List<Product> findAllByTypePersonId(Integer typePersonId) {
-        return productRepository.findAllByTypePersonId(typePersonId);
+    public Optional<Product> findBySlug(String slug) {
+        return productRepository.findBySlug(slug);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAllByCategoryId(Integer categoryId) {
-        return productRepository.findAllByCategoryId(categoryId);
+    public List<Integer> findProductByCriteria(Integer typePersonId, Integer categoryId, List<Integer> listColorId, List<Integer> listSizeId) {
+        return productRepository.findProductByCriteria(typePersonId, categoryId, listColorId, listSizeId);
     }
 }

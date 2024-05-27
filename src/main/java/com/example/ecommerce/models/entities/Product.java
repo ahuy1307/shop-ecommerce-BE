@@ -20,12 +20,11 @@ public class Product {
     private float price;
     private String composition;
     private String neckline;
-
     @Column(name = "sleeve_length")
     private String sleeveLength;
     @Column(name = "care_instruction")
     private String careInstruction;
-
+    private String slug;
     @Column(name = "category_id")
     private Integer categoryId;
 }
